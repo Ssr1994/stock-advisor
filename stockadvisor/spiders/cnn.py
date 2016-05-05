@@ -9,11 +9,14 @@ class CnnSpider(scrapy.Spider):
     name = "cnn"
     allowed_domains = ["cnn.com"]
     basic_url = "http://www.cnn.com/search/?text="
+    query = None
 
     def start_requests(self):
+        if not self.query:
+            self.query = QUERY
         # CNN's date range is handled in middlewares.py
         for n in [1, 2]:
-            yield scrapy.Request(self.basic_url + urllib.quote_plus(QUERY), self.parse, dont_filter=True,
+            yield scrapy.Request(self.basic_url + urllib.quote_plus(self.query), self.parse, dont_filter=True,
                                  meta={"phantomjs": True, 'target': 'cnn', 'pageNum': n})
     
     def parse(self, response):
@@ -41,7 +44,7 @@ class CnnSpider(scrapy.Spider):
             item['time'] = response.xpath('//div[@class="storytimestamp"]/span[@class="cnnDateStamp"]/text()').extract()
         item['url'] = response.url
         item['publisher'] = 'CNN'
-        item['query'] = QUERY
+        item['query'] = self.query
         item['title'] = ''.join(item['title'])
         outputWebpage(item['title'], response)
         yield item

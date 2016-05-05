@@ -9,9 +9,10 @@ class WsjSpider(scrapy.Spider):
     name = "wsj"
     allowed_domains = ["wsj.com"]
     basic_url = "http://www.wsj.com/search/term.html?KEYWORDS="
+    query = None
 
     def start_requests(self):
-        yield scrapy.Request(self.basic_url + urllib.quote(QUERY), self.parse)
+        yield scrapy.Request(self.basic_url + urllib.quote(self.query), self.parse)
     
     def parse(self, response):
         for url in response.xpath('//h3[@class="headline"]/a/@href').extract():
@@ -37,6 +38,6 @@ class WsjSpider(scrapy.Spider):
         item['title'] = ''.join(item['title']).lstrip()
         item['url'] = response.url
         item['publisher'] = 'WSJ'
-        item['query'] = QUERY
+        item['query'] = self.query
         outputWebpage(item['title'], response)
         yield item

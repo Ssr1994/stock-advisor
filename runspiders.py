@@ -7,8 +7,6 @@ def run_spiders(query=None, ticker=None):
     if not os.path.exists(FILE_PATH):
         os.makedirs(FILE_PATH)
     
-    #settings = get_project_settings()
-    #settings.setdict({'QUERY': query, 'TICKER': ticker, 'DB': db, 'SEARCH_TABLE': searchTable, 'TICKER_TABLE': tickerTable})
     process = CrawlerProcess(get_project_settings())
     if query:
         process.crawl('cnn', query=query)
@@ -20,4 +18,23 @@ def run_spiders(query=None, ticker=None):
     if ticker:
         process.crawl('yfnc', ticker=ticker)
     process.start()
-        
+
+import sys, getopt
+
+if __name__ == "__main__":
+    query = None
+    ticker = None
+    try:
+        opts, args = getopt.getopt(sys.argv[1:],"hq:t:")
+    except getopt.GetoptError:
+        print 'runspiders.py -q <query> -t <ticker>'
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print 'runspiders.py -q <query> -t <ticker>'
+            sys.exit()
+        elif opt == '-q':
+            query = arg
+        elif opt == '-t':
+            ticker = arg
+    run_spiders(query, ticker)

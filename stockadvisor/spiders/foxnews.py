@@ -12,13 +12,16 @@ class FoxnewsSpider(scrapy.Spider):
     allowed_domains = ["foxnews.com"]
     query_url = "http://www.foxnews.com/search-results/search?q="
     days = 14
+    query = None
 
     def start_requests(self):
+        if not self.query:
+            self.query = QUERY
         end_date = date.today()
         start_date = end_date - timedelta(self.days)
         options = "&ss=fn&min_date=" + start_date.isoformat() + "&max_date=" + end_date.isoformat() + "&start="
         for n in ['0', '10']:
-            yield scrapy.Request(self.query_url + urllib.quote(QUERY) + options + n, 
+            yield scrapy.Request(self.query_url + urllib.quote(self.query) + options + n, 
                                  callback=self.parse, meta={"phantomjs": True})
 
     def parse(self, response):
@@ -46,7 +49,7 @@ class FoxnewsSpider(scrapy.Spider):
         item['content'] = ' '.join(response.xpath('//div[@itemprop="articleBody"]/p//text()').extract())
         if not item['content']:
             item['content'] = ' '.join(response.xpath('//div[@class="article-text"]/p//text()').extract())
-        item['query'] = QUERY
+        item['query'] = self.query
         item['keyLine'] = response.meta['keyline']
         outputWebpage(item['title'], response)
         yield item

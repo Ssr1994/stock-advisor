@@ -10,9 +10,12 @@ class NytimesSpider(scrapy.Spider):
     allowed_domains = ["nytimes.com"]
     basic_url = "http://query.nytimes.com/search/sitesearch/?#/"
     dateRange = '7days'
+    query = None
 
     def start_requests(self):
-        url = self.basic_url + QUERY + '/' + self.dateRange + '/allresults/'
+        if not self.query:
+            self.query = QUERY
+        url = self.basic_url + self.query + '/' + self.dateRange + '/allresults/'
         for n in ['1/', '2/']:
             yield scrapy.Request(url + n, self.parse, dont_filter=True, meta={'phantomjs': True})
     
@@ -29,7 +32,7 @@ class NytimesSpider(scrapy.Spider):
         item['content'] = response.xpath('//div[@class="story-body"]/p//text()').extract()
         item['url'] = response.url
         item['publisher'] = 'NYTimes'
-        item['query'] = QUERY
+        item['query'] = self.query
         item['keyLine'] = ''
         outputWebpage(item['title'], response)
         yield item

@@ -10,9 +10,12 @@ class WapostSpider(scrapy.Spider):
     allowed_domains = ["washingtonpost.com"]
     basic_url = 'http://www.washingtonpost.com/newssearch/?query='
     date_range = '7+Days'
+    query = None
 
     def start_requests(self):
-        yield scrapy.Request(self.basic_url + urllib.quote_plus(QUERY) + '&datefilter=' + self.date_range, self.parse,
+        if not self.query:
+            self.query = QUERY
+        yield scrapy.Request(self.basic_url + urllib.quote_plus(self.query) + '&datefilter=' + self.date_range, self.parse,
                              meta={"phantomjs": True, "target": 'wapost'})
     
     def parse(self, response):
@@ -30,7 +33,7 @@ class WapostSpider(scrapy.Spider):
         item['publisher'] = 'WP'
         item['url'] = response.url
         item['content'] = ' '.join(body.xpath('article[@itemprop="articleBody"]/p//text()').extract())
-        item['query'] = QUERY
+        item['query'] = self.query
         item['keyLine'] = ''
         outputWebpage(item['title'], response)
         yield item

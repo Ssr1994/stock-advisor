@@ -3,6 +3,7 @@ import scrapy
 import urllib
 from datetime import date, timedelta
 from stockadvisor.items import KeywordsearchItem
+from stockadvisor.settings import QUERY
 from stockadvisor.outputwebpage import outputWebpage
 
 class LatimesSpider(scrapy.Spider):
@@ -14,6 +15,8 @@ class LatimesSpider(scrapy.Spider):
     days = 20
 
     def start_requests(self):
+        if not self.query:
+            self.query = QUERY
         end_date = date.today()
         start_date = end_date - timedelta(self.days)
         options = "&target=all&spell=on&date=" + start_date.strftime('%m/%d/%Y') + "-" + end_date.strftime('%m/%d/%Y')
