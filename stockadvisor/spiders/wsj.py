@@ -23,7 +23,7 @@ class WsjSpider(scrapy.Spider):
         if response.url.split('/')[3] == 'cio': #http://.../cio/...
             header = response.xpath('//header[@class="post-header single-post-header"]')
             item['title'] = header.xpath('h1[@class="post-title h-main"]/text()').extract()
-            item['time'] = header.xpath('small[@class="post-time"]/text()').extract()
+            item['time'] = ' '.join(header.xpath('small[@class="post-time"]/text()').extract())
             item['keyLine'] = ''
             body = response.xpath('//div[@class="post-content"]')
             item['author'] = body.xpath('//li[@class="post-author"]/a/text()').extract()

@@ -5,6 +5,8 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import sqlite3
+import re
+import dateutil.parser as dparser
 from stockadvisor.settings import DB, SEARCH_TABLE, TICKER_TABLE, DROP_TABLE
 
 class KeywordsearchPipeline(object):
@@ -37,9 +39,38 @@ class KeywordsearchPipeline(object):
         for k, v in item.iteritems():
             if isinstance(v, list):
                 item[k] = ''.join(v)
+        item['time'] = re.sub(r'(?i)first', '', item['time'])
+        item['time'] = re.sub(r'(?i)published', '', item['time'])
+        item['time'] = re.sub(r'(?i)updated', '', item['time'])
+        item['time'] = re.sub('.', '', item['time'])
+        item['time'] = re.sub(r'2016:', '2016', item['time']) # to be updated!!
+        item['time'] = str(dparser.parse(item['time']))
         self.cur.execute('INSERT INTO ' + SEARCH_TABLE + ' VALUES(?,?,?,?,?,?,?,?)',
                          (item['title'], item['author'], item['keyLine'], item['time'], item['publisher'], item['url'], item['query'], item['content']))
         self.conn.commit()
+        return item
+
+
+class MongodbPipeline(object):
+    def __init__(self):
+        self.client = MongoClient('45.79.109.200', 27017)
+        self.db = self.client['cs130']
+        self.collection = self.db['news']
+
+    def process_item(self, item, spider):
+        if spider.name == 'yfnc':
+            return item
+        if len(item) != 8:
+            raise Exception('Item has incorrect number of attributes!')
+        for k, v in item.iteritems():
+            if isinstance(v, list):
+                item[k] = ''.join(v)
+        item['time'] = re.sub(r'(?i)first', '', item['time'])
+        item['time'] = re.sub(r'(?i)published', '', item['time'])
+        item['time'] = re.sub(r'(?i)updated', '', item['time'])
+        item['time'] = re.sub('.', '', item['time'])
+        item['time'] = re.sub(r'2016:', '2016', item['time']) # to be updated!!
+        self.collection.insert_one(item)
         return item
 
 

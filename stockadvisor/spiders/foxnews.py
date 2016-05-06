@@ -8,7 +8,6 @@ from stockadvisor.outputwebpage import outputWebpage
 
 class FoxnewsSpider(scrapy.Spider):
     name = "foxnews"
-    orgname = "Fox News"
     allowed_domains = ["foxnews.com"]
     query_url = "http://www.foxnews.com/search-results/search?q="
     days = 14
@@ -43,8 +42,8 @@ class FoxnewsSpider(scrapy.Spider):
             item['author'] = response.xpath('//div[@class="article-info"]/div/div/text()').extract()
         if not item['author']:
             item['author'] = response.xpath('//div[@class="article-info"]/div/p/span/text()').extract()
-        item['time'] = response.xpath('//div[@class="article-info"]//time/@datetime').extract()
-        item['publisher'] = self.orgname
+        item['time'] = response.xpath('//div[@class="article-info"]//time/text()').extract()
+        item['publisher'] = "Fox News"
         item['url'] = response.url
         item['content'] = ' '.join(response.xpath('//div[@itemprop="articleBody"]/p//text()').extract())
         if not item['content']:

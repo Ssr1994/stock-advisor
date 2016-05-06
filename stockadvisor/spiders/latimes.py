@@ -8,7 +8,6 @@ from stockadvisor.outputwebpage import outputWebpage
 
 class LatimesSpider(scrapy.Spider):
     name = "latimes"
-    orgname = "LATimes"
     allowed_domains = ['latimes.com']
     query_url = "http://www.latimes.com/search/dispatcher.front?Query="
     query = None
@@ -42,7 +41,7 @@ class LatimesSpider(scrapy.Spider):
         if not item['time']:
             item['time'] = response.xpath('//div[@class="trb_article_dateline"]/time/@data-dt').extract()
         
-        item['publisher'] = self.orgname
+        item['publisher'] = "LATimes"
         item['url'] = response.url
 
         item['content'] = ' '.join(response.xpath('//div[@class="trb_ar_page"]/p//text()').extract())
