@@ -17,10 +17,13 @@ class YfncSpider(scrapy.Spider):
         for tr in response.xpath('//table[@class="yfnc_datamodoutline1"]//table/tr')[1:-1]:
             item = YahoofinanceItem()
             for i, td in enumerate(tr.xpath('td/text()').extract()):
-                item[YfncItemFields[i]] = td
+                try:
+                    item[YfncItemFields[i]] = float(td)
+                except ValueError:
+                    item[YfncItemFields[i]] = td
             if len(item) == 7:
                 sd = item['date'].split()
-                item['date'] = date(int(sd[2]), self.months.index(sd[0]) + 1, int(sd[1][0:-1])).strftime('%Y%m%d')
-                item['volume'] = item['volume'].replace(',', '')
+                item['date'] = int(date(int(sd[2]), self.months.index(sd[0]) + 1, int(sd[1][0:-1])).strftime('%Y%m%d'))
+                item['volume'] = int(item['volume'].replace(',', ''))
             item['company'] = self.ticker
             yield item
