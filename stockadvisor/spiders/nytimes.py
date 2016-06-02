@@ -34,5 +34,5 @@ class NytimesSpider(scrapy.Spider):
         item['publisher'] = 'NYTimes'
         item['query'] = self.query
         item['keyLine'] = ''
-        outputWebpage(item['title'], response)
+        #outputWebpage(item['title'], response)
         yield item

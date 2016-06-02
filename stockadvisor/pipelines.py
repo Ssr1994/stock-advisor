@@ -7,6 +7,7 @@
 import sqlite3
 import re
 import dateutil.parser as dparser
+from pymongo import MongoClient
 from stockadvisor.settings import DB, SEARCH_TABLE, TICKER_TABLE, DROP_TABLE
 
 class KeywordsearchPipeline(object):
@@ -44,7 +45,7 @@ class KeywordsearchPipeline(object):
         item['time'] = re.sub(r'(?i)updated', '', item['time'])
         item['time'] = re.sub('.', '', item['time'])
         item['time'] = re.sub(r'2016:', '2016', item['time']) # to be updated!!
-        item['time'] = str(dparser.parse(item['time']))
+        item['time'] = dparser.parse(item['time']).strftime('%Y%m%d')
         self.cur.execute('INSERT INTO ' + SEARCH_TABLE + ' VALUES(?,?,?,?,?,?,?,?)',
                          (item['title'], item['author'], item['keyLine'], item['time'], item['publisher'], item['url'], item['query'], item['content']))
         self.conn.commit()
@@ -54,7 +55,7 @@ class KeywordsearchPipeline(object):
 class MongodbPipeline(object):
     def __init__(self):
         self.client = MongoClient('45.79.109.200', 27017)
-        self.db = self.client['cs130']
+        self.db = self.client['cs1302']
         self.collection = self.db['news']
 
     def process_item(self, item, spider):
@@ -70,13 +71,18 @@ class MongodbPipeline(object):
         item['time'] = re.sub(r'(?i)updated', '', item['time'])
         item['time'] = re.sub('.', '', item['time'])
         item['time'] = re.sub(r'2016:', '2016', item['time']) # to be updated!!
-        self.collection.insert_one(item)
+        item['time'] = dparser.parse(item['time']).strftime('%Y%m%d')
+        self.collection.insert_one(item._values)
         return item
 
 
 class YahoofinancePipeline(object):
     
     def __init__(self):
+        self.client = MongoClient('45.79.109.200', 27017)
+        self.db = self.client['cs1302']
+        self.collection = self.db['ticker']
+    """
         self.conn = sqlite3.connect('./' + DB + '.db')
         self.cur = self.conn.cursor()
         if DROP_TABLE:
@@ -93,13 +99,16 @@ class YahoofinancePipeline(object):
     
     def __del__(self):
         self.conn.close()
-        
+    """
     def process_item(self, item, spider):
         if spider.name != 'yfnc':
             return item
-        if len(item) != 7: # avoid dividend line
+        if len(item) != 8: # avoid dividend line
             return
+        self.collection.insert_one(item._values)
+    """
         self.cur.execute('INSERT INTO ' + TICKER_TABLE + ' VALUES(?,?,?,?,?,?,?)',
                          (item['date'], item['open'], item['high'], item['low'], item['close'], item['volume'], item['adjClose']))
         self.conn.commit()
         return item
+    """

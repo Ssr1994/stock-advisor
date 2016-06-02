@@ -35,5 +35,5 @@ class WapostSpider(scrapy.Spider):
         item['content'] = ' '.join(body.xpath('article[@itemprop="articleBody"]/p//text()').extract())
         item['query'] = self.query
         item['keyLine'] = ''
-        outputWebpage(item['title'], response)
+        #outputWebpage(item['title'], response)
         yield item

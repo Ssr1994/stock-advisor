@@ -25,5 +25,6 @@ class YahoofinanceItem(scrapy.Item):
     close = scrapy.Field()
     volume = scrapy.Field()
     adjClose = scrapy.Field()
+    company = scrapy.Field()
 
 YfncItemFields = ['date', 'open', 'high', 'low', 'close', 'volume', 'adjClose'] # must be consistent with the order in the item class

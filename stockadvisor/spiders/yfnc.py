@@ -22,4 +22,5 @@ class YfncSpider(scrapy.Spider):
                 sd = item['date'].split()
                 item['date'] = date(int(sd[2]), self.months.index(sd[0]) + 1, int(sd[1][0:-1])).strftime('%Y%m%d')
                 item['volume'] = item['volume'].replace(',', '')
+            item['company'] = self.ticker
             yield item

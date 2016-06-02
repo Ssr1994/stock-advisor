@@ -52,5 +52,5 @@ class LatimesSpider(scrapy.Spider):
         item['query'] = self.query
         item['keyLine'] = ''
         item['title'] = ''.join(item['title']).lstrip().rstrip()
-        outputWebpage(item['title'], response)
+        #outputWebpage(item['title'], response)
         yield item

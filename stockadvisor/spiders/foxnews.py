@@ -50,5 +50,5 @@ class FoxnewsSpider(scrapy.Spider):
             item['content'] = ' '.join(response.xpath('//div[@class="article-text"]/p//text()').extract())
         item['query'] = self.query
         item['keyLine'] = response.meta['keyline']
-        outputWebpage(item['title'], response)
+        #outputWebpage(item['title'], response)
         yield item

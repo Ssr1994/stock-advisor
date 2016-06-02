@@ -70,8 +70,8 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'stockadvisor.pipelines.KeywordsearchPipeline': 300,
-#    'stockadvisor.pipelines.MongodbPipeline': 300,
+#    'stockadvisor.pipelines.KeywordsearchPipeline': 300,
+    'stockadvisor.pipelines.MongodbPipeline': 300,
     'stockadvisor.pipelines.YahoofinancePipeline': 400,
 }
 

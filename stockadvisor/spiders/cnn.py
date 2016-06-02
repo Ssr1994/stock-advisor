@@ -46,5 +46,5 @@ class CnnSpider(scrapy.Spider):
         item['publisher'] = 'CNN'
         item['query'] = self.query
         item['title'] = ''.join(item['title'])
-        outputWebpage(item['title'], response)
+        #outputWebpage(item['title'], response)
         yield item

@@ -39,5 +39,5 @@ class WsjSpider(scrapy.Spider):
         item['url'] = response.url
         item['publisher'] = 'WSJ'
         item['query'] = self.query
-        outputWebpage(item['title'], response)
+        #outputWebpage(item['title'], response)
         yield item
