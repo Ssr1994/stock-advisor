@@ -69,7 +69,7 @@ class MongodbPipeline(object):
         item['time'] = re.sub(r'(?i)first', '', item['time'])
         item['time'] = re.sub(r'(?i)published', '', item['time'])
         item['time'] = re.sub(r'(?i)updated', '', item['time'])
-        item['time'] = re.sub('.', '', item['time'])
+        item['time'] = re.sub('\.', '', item['time'])
         item['time'] = re.sub(r'2016:', '2016', item['time']) # to be updated!!
         item['time'] = int(dparser.parse(item['time']).strftime('%Y%m%d'))
         self.collection.insert_one(item._values)
