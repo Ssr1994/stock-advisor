@@ -54,8 +54,9 @@ class KeywordsearchPipeline(object):
 
 class MongodbPipeline(object):
     def __init__(self):
-        self.client = MongoClient('45.79.109.200', 27017)
-        self.db = self.client['cs1302']
+        self.client = MongoClient('ds015953.mlab.com', 15953)
+        self.db = self.client['stock_advisor']
+        self.db.authenticate('simon', '123')
         self.collection = self.db['news']
 
     def process_item(self, item, spider):
@@ -66,21 +67,27 @@ class MongodbPipeline(object):
         for k, v in item.iteritems():
             if isinstance(v, list):
                 item[k] = ''.join(v)
+        # throw away empty
+        if not item['title'] or not item['content']:
+            return item
         item['time'] = re.sub(r'(?i)first', '', item['time'])
         item['time'] = re.sub(r'(?i)published', '', item['time'])
         item['time'] = re.sub(r'(?i)updated', '', item['time'])
         item['time'] = re.sub('\.', '', item['time'])
         item['time'] = re.sub(r'2016:', '2016', item['time']) # to be updated!!
         item['time'] = int(dparser.parse(item['time']).strftime('%Y%m%d'))
-        self.collection.insert_one(item._values)
+        tmp_item = item._values
+        tmp_item['vote'] = 0 # added for UI
+        self.collection.insert_one(tmp_item)
         return item
 
 
 class YahoofinancePipeline(object):
     
     def __init__(self):
-        self.client = MongoClient('45.79.109.200', 27017)
-        self.db = self.client['cs1302']
+        self.client = MongoClient('ds015953.mlab.com', 15953)
+        self.db = self.client['stock_advisor']
+        self.db.authenticate('simon', '123')
         self.collection = self.db['ticker']
     """
         self.conn = sqlite3.connect('./' + DB + '.db')

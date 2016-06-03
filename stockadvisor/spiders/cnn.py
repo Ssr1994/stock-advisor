@@ -15,7 +15,7 @@ class CnnSpider(scrapy.Spider):
         if not self.query:
             self.query = QUERY
         # CNN's date range is handled in middlewares.py
-        for n in [1, 2]:
+        for n in [1, 2, 3, 4]:
             yield scrapy.Request(self.basic_url + urllib.quote_plus(self.query), self.parse, dont_filter=True,
                                  meta={"phantomjs": True, 'target': 'cnn', 'pageNum': n})
     

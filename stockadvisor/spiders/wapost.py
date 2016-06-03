@@ -9,14 +9,15 @@ class WapostSpider(scrapy.Spider):
     name = "wapost"
     allowed_domains = ["washingtonpost.com"]
     basic_url = 'http://www.washingtonpost.com/newssearch/?query='
-    date_range = '7+Days'
+    date_range = '60+Days'
     query = None
 
     def start_requests(self):
         if not self.query:
             self.query = QUERY
-        yield scrapy.Request(self.basic_url + urllib.quote_plus(self.query) + '&datefilter=' + self.date_range, self.parse,
-                             meta={"phantomjs": True, "target": 'wapost'})
+        for n in ['1', '2', '3', '4']:
+            yield scrapy.Request(self.basic_url + urllib.quote_plus(self.query) + '&datefilter=' + self.date_range + "#page-" + n,
+                                 self.parse, meta={"phantomjs": True, "target": 'wapost'})
     
     def parse(self, response):
         for url in response.xpath('//div[@class="pb-results-container"]//a/@href').extract():

@@ -9,14 +9,14 @@ class NytimesSpider(scrapy.Spider):
     name = "nytimes"
     allowed_domains = ["nytimes.com"]
     basic_url = "http://query.nytimes.com/search/sitesearch/?#/"
-    dateRange = '7days'
+    dateRange = '30days'
     query = None
 
     def start_requests(self):
         if not self.query:
             self.query = QUERY
         url = self.basic_url + self.query + '/' + self.dateRange + '/allresults/'
-        for n in ['1/', '2/']:
+        for n in ['1/', '2/', '3/', '4/']:
             yield scrapy.Request(url + n, self.parse, dont_filter=True, meta={'phantomjs': True})
     
     def parse(self, response):

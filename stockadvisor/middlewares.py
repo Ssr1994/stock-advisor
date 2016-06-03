@@ -10,15 +10,10 @@ class PhantomJSMiddleware(object):
             driver = webdriver.PhantomJS(executable_path='phantomjs', service_args=['--load-images=no'])
             driver.get(request.url)
             if request.meta.has_key('target'):
-                if request.meta['target'] == 'wapost':
-                    btn = driver.find_element_by_css_selector('div.pb-loadMore')
-                    if btn.is_displayed():
-                        btn.click()
-                elif request.meta['target'] == 'cnn':
-                    if int(request.meta['pageNum']) == 1:
-                        driver.execute_script('document.getElementById("PASTMONTH").click();')
-                    else:
-                        driver.execute_script('document.getElementById("PASTMONTH").click(); el = document.getElementsByClassName("left text text-active"); if (el.length) el[0].click();')
+                if request.meta['target'] == 'cnn':
+                    n = int(request.meta['pageNum'])
+                    if n > 1:
+                        driver.execute_script('el = document.getElementsByClassName("pagination-digits")[0].getElementsByClassName("cnnSearchPageLink"); if (el.length>=' + n + ') el[' + n + '].click();')
             time.sleep(3)
             content = driver.page_source.encode('utf-8')
             url = driver.current_url.encode('utf-8')

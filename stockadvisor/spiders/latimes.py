@@ -11,7 +11,7 @@ class LatimesSpider(scrapy.Spider):
     allowed_domains = ['latimes.com']
     query_url = "http://www.latimes.com/search/dispatcher.front?Query="
     query = None
-    days = 20
+    days = 30
 
     def start_requests(self):
         if not self.query:
@@ -19,7 +19,8 @@ class LatimesSpider(scrapy.Spider):
         end_date = date.today()
         start_date = end_date - timedelta(self.days)
         options = "&target=all&spell=on&date=" + start_date.strftime('%m/%d/%Y') + "-" + end_date.strftime('%m/%d/%Y')
-        yield scrapy.Request(self.query_url + urllib.quote_plus(self.query) + options, callback=self.parse)
+        for n in ['1', '2']:
+            yield scrapy.Request(self.query_url + urllib.quote_plus(self.query) + options + '&page=' + n, callback=self.parse)
 
     def parse(self, response):
         for url in response.xpath('//div[@class="trb_search_result_wrapper"]/a/@href').extract():
