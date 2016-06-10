@@ -71,7 +71,7 @@ class MongodbPipeline(object):
         if not item['title'] or not item['content']:
             return item
         # avoid duplicates
-        if bool(self.collection.find_one({'title': item['title']}))
+        if bool(self.collection.find_one({'title': item['title']})):
             return item
         item['time'] = re.sub(r'(?i)first', '', item['time'])
         item['time'] = re.sub(r'(?i)published', '', item['time'])

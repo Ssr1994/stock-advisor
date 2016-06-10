@@ -16,8 +16,7 @@ class WapostSpider(scrapy.Spider):
         if not self.query:
             self.query = QUERY
         for n in ['1', '2', '3', '4']:
-            yield scrapy.Request(self.basic_url + urllib.quote_plus(self.query) + '&datefilter=' + self.date_range + "#page-" + n,
-                                 self.parse, meta={"phantomjs": True, "target": 'wapost'})
+            yield scrapy.Request(self.basic_url + urllib.quote_plus(self.query) + '&datefilter=' + self.date_range + "#page-" + n, self.parse, dont_filter=True, meta={"phantomjs": True, "target": 'wapost'})
     
     def parse(self, response):
         for url in response.xpath('//div[@class="pb-results-container"]//a/@href').extract():
